@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookapp'
+    'bookapp',
+    'django_cassandra_engine'
+
 ]
 
 MIDDLEWARE = [
@@ -74,12 +77,32 @@ WSGI_APPLICATION = 'Webook.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# settings.py
+
+# Configuración para Cassandra
+CASSANDRA_CONNECTION = {
+    'HOST': 'cassandra',  # Nombre del servicio en docker-compose
+    'PORT': 9042,         # Puerto por defecto de Cassandra
+    'KEYSPACE': 'tu_keyspace',  # Nombre del keyspace en Cassandra
+    'USER': 'admin',     # Usuario para autenticación
+    'PASSWORD': 'adminpassword',  # Contraseña para autenticación
+}
+
+# Otros ajustes de Django
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django_cassandra_engine',
+        'NAME': CASSANDRA_CONNECTION['KEYSPACE'],
+        'HOST': CASSANDRA_CONNECTION['HOST'],
+        'PORT': CASSANDRA_CONNECTION['PORT'],
+        'USER': CASSANDRA_CONNECTION['USER'],
+        'PASSWORD': CASSANDRA_CONNECTION['PASSWORD'],
     }
 }
+
+# Agregar otras configuraciones necesarias para tu aplicación Django
+
+
 
 
 # Password validation
