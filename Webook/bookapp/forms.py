@@ -17,11 +17,10 @@ class BookForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
         try:
             authors = Author.objects.all()
             author_choices = [(author.id, author.name) for author in authors]
-        except DoesNotExist:
+        except Author.DoesNotExist:
             author_choices = []
         self.fields['author'].choices = author_choices
 
