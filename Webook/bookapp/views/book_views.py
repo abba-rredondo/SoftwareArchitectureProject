@@ -3,6 +3,7 @@ from ..models import Book, Author
 from ..forms import BookForm
 from cassandra.cqlengine.query import DoesNotExist
 from django.contrib import messages
+from uuid import uuid4
 
 
 def book_list(request):
@@ -14,10 +15,14 @@ def book_create(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
-            form.save()
+            book_instance = form.save(commit=False)
+            if not book_instance.id:
+                book_instance.id = uuid4()  
+            book_instance.save()
             return redirect('book_list')
     else:
         form = BookForm()
+    
     return render(request, 'book_templates/book_form.html', {'form': form})
 
 
