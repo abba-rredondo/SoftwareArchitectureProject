@@ -80,25 +80,29 @@ WSGI_APPLICATION = 'Webook.wsgi.application'
 # settings.py
 
 # Configuración para Cassandra
-CASSANDRA_CONNECTION = {
-    'HOST': 'cassandra',  # Nombre del servicio en docker-compose
-    'PORT': 9042,         # Puerto por defecto de Cassandra
-    'KEYSPACE': 'tu_keyspace',  # Nombre del keyspace en Cassandra
-    'USER': 'admin',     # Usuario para autenticación
-    'PASSWORD': 'adminpassword',  # Contraseña para autenticación
+CASSANDRA_CONNECTIONS = {
+    'default': {
+        'hosts': ['cassandra'],  # Replace 'cassandra' with your Cassandra host
+        'port': 9042,
+        'default_keyspace': 'tu_keyspace',  # Replace with your keyspace
+        'user': 'admin',
+        'password': 'adminpassword',
+    }
 }
+
 
 # Otros ajustes de Django
 DATABASES = {
     'default': {
         'ENGINE': 'django_cassandra_engine',
-        'NAME': CASSANDRA_CONNECTION['KEYSPACE'],
-        'HOST': CASSANDRA_CONNECTION['HOST'],
-        'PORT': CASSANDRA_CONNECTION['PORT'],
-        'USER': CASSANDRA_CONNECTION['USER'],
-        'PASSWORD': CASSANDRA_CONNECTION['PASSWORD'],
+        'NAME': 'tu_keyspace',  # Your keyspace
+        'HOST': 'cassandra',    # Your Cassandra host
+        'PORT': 9042,
+        'USER': 'admin',
+        'PASSWORD': 'adminpassword',
     }
 }
+
 
 # Agregar otras configuraciones necesarias para tu aplicación Django
 

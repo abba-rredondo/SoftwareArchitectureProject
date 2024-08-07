@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Estadísticas de Autores</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function sortTable(column) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('sort', column);
+            window.location.search = urlParams.toString();
+        }
+    </script>
+</head>
+<body>
+    <h1>Estadísticas de Autores</h1>
+    
+    <label for="filter_name">Filtrar por nombre:</label>
+    <input type="text" id="filter_name" name="filter_name" value="{{ filter_name }}" oninput="filterByName(this.value)">
+    
+    <table>
+        <thead>
+            <tr>
+                <th onclick="sortTable('name')">Autor</th>
+                <th onclick="sortTable('num_libros')">Número de Libros</th>
+                <th onclick="sortTable('promedio_puntuacion')">Puntuación Promedio</th>
+                <th onclick="sortTable('ventas_totales')">Ventas Totales</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for autor in data %}
+                <tr>
+                    <td>{{ autor.name }}</td>
+                    <td>{{ autor.num_libros }}</td>
+                    <td>{{ autor.promedio_puntuacion }}</td>
+                    <td>{{ autor.ventas_totales }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <script>
+        function filterByName(value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('filter_name', value);
+            window.location.search = urlParams.toString();
+        }
+    </script>
+</body>
+</html>

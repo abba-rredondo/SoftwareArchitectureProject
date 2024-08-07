@@ -1,0 +1,17 @@
+{% extends 'review_templates/base_review.html' %}
+
+{% block title %}Review List{% endblock %}
+
+{% block content %}
+    <h2>Review List</h2>
+    <ul>
+        {% for review in reviews %}
+            <li>
+                {{ review.book }} - {{ review.review_text }} - {{ review.score }}
+                <a href="{% url 'review_update' review.id %}">Edit</a>
+                <a href="{% url 'review_delete' review.id %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'review_create' %}">Add Review</a>
+{% endblock %}

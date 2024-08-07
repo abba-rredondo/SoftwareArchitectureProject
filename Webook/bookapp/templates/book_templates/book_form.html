@@ -1,0 +1,10 @@
+{% extends "book_templates/base_book.html" %}
+
+{% block content %}
+<h2>{{ form.instance.id|yesno:"Update Book,Create Book" }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'sales_templates/base_sales.html' %}
+
+{% block title %}Sales List{% endblock %}
+
+{% block content %}
+    <h2>Sales List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Year</th>
+                <th>Sales</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale in sales %}
+            <tr>
+                <td>
+                    {% for book in books %}
+                        {% if book.id == sale.book %}
+                            {{ book.name }}
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>{{ sale.year }}</td>
+                <td>{{ sale.sales }}</td>
+                <td>
+                    <a href="{% url 'sales_update' sale.book sale.year %}">Edit</a> |
+                    <a href="{% url 'sales_delete' sale.book sale.year %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
