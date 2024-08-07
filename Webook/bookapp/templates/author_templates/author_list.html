@@ -1,0 +1,14 @@
+{% extends 'author_templates/base_author.html' %}
+
+{% block content %}
+<h1>Lista de Autores</h1>
+<a href="{% url 'author_create' %}">Crear nuevo Autor</a>
+<ul>
+    {% for author in authors %}
+        <li>
+            {{ author.name }} - <a href="{% url 'author_update' author.id %}">Editar</a>
+            - <a href="{% url 'author_delete' author.id %}">Eliminar</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

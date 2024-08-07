@@ -1,5 +1,5 @@
-from django_cassandra_engine.models import DjangoCassandraModel
-from cassandra.cqlengine import columns
+from django_cassandra_engine.models import DjangoCassandraModel # type: ignore
+from cassandra.cqlengine import columns # type: ignore
 
 
 class Author(DjangoCassandraModel):
