@@ -1,16 +1,21 @@
 from django.shortcuts import render, redirect
-from ..models import Review
+from ..models import Review, Book
 from ..forms import ReviewForm
 from django.contrib import messages
+from uuid import uuid4
 
 def review_list(request):
     reviews = Review.objects.all()
-    return render(request, 'review_templates/review_list.html', {'reviews': reviews})
+    books = Book.objects.all()
+    return render(request, 'review_templates/review_list.html', {'reviews': reviews, 'books':  books})
 
 def review_create(request):
     if request.method == 'POST':
         form = ReviewForm(request.POST)
         if form.is_valid():
+            review_instance = form.save(commit=False)
+            if not review_instance.id:
+                review_instance.id = uuid4()
             form.save()
             return redirect('review_list')
     else:
