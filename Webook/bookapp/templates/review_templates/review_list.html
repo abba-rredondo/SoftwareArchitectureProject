@@ -7,7 +7,11 @@
     <ul>
         {% for review in reviews %}
             <li>
-                {{ review.book }} - {{ review.review_text }} - {{ review.score }}
+                {% for book in books %}
+                        {% if book.id == review.book %}
+                            {{ book.name }}
+                        {% endif %}
+                    {% endfor %} - {{ review.review_text }} - {{ review.score }}
                 <a href="{% url 'review_update' review.id %}">Edit</a>
                 <a href="{% url 'review_delete' review.id %}">Delete</a>
             </li>
