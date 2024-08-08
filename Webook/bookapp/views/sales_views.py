@@ -8,27 +8,24 @@ def sales_list(request):
     sales = Sales.objects.all().order_by('book', 'year')
     books = Book.objects.all()
 
-    paginator = Paginator(sales, 70)  
-    page_number = request.GET.get('page')  
-    page_obj = paginator.get_page(page_number)  
+    paginator = Paginator(sales, 70)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    
     book_dict = {book.id: book.name for book in books}
 
-    
-    sales_by_book = {}
+    sales_data = []
     for sale in page_obj:
-        book_id = sale.book  
-        if book_id not in sales_by_book:
-            sales_by_book[book_id] = {
-                'name': book_dict.get(book_id, 'Unknown Book'),
-                'sales': {year: '-' for year in range(2017, 2024)}
-            }
-        sales_by_book[book_id]['sales'][sale.year] = sale.sales
+        sales_data.append({
+            'book': book_dict.get(sale.book, 'Unknown Book'),
+            'year': sale.year,
+            'sales': sale.sales,
+            'id': sale.book
+        })
 
     return render(request, 'sales_templates/sales_list.html', {
         'page_obj': page_obj,
-        'sales_by_book': sales_by_book
+        'sales_data': sales_data
     })
 
 def sales_create(request):

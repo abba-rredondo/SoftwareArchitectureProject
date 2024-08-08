@@ -11,30 +11,20 @@
         <thead>
             <tr>
                 <th>Book</th>
-                <th>2017</th>
-                <th>2018</th>
-                <th>2019</th>
-                <th>2020</th>
-                <th>2021</th>
-                <th>2022</th>
-                <th>2023</th>
+                <th>Year</th>
+                <th>Sales</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for book_id, book_data in sales_by_book.items %}
+            {% for sale in sales_data %}
                 <tr>
-                    <td>{{ book_data.name }}</td>
-                    <td>{{ book_data.sales.2017 }}</td>
-                    <td>{{ book_data.sales.2018 }}</td>
-                    <td>{{ book_data.sales.2019 }}</td>
-                    <td>{{ book_data.sales.2020 }}</td>
-                    <td>{{ book_data.sales.2021 }}</td>
-                    <td>{{ book_data.sales.2022 }}</td>
-                    <td>{{ book_data.sales.2023 }}</td>
+                    <td>{{ sale.book }}</td>
+                    <td>{{ sale.year }}</td>
+                    <td>{{ sale.sales }}</td>
                     <td>
-                        <a href="{% url 'sales_update' book_id '2017' %}" class="btn btn-warning btn-sm">Edit</a> |
-                        <a href="{% url 'sales_delete' book_id '2017' %}" class="btn btn-danger btn-sm">Delete</a>
+                        <a href="{% url 'sales_update' sale.id sale.year %}" class="btn btn-warning btn-sm">Edit</a> |
+                        <a href="{% url 'sales_delete' sale.id sale.year %}" class="btn btn-danger btn-sm">Delete</a>
                     </td>
                 </tr>
             {% endfor %}
