@@ -31,9 +31,28 @@ def fetch_author_birth(author_key):
     if response.status_code == 200:
         data = response.json()
         try:
-            return data['birth_date']
-        except:
-            return faker.date_of_birth()
+            
+            date = data.get('birth_date')
+
+            if date is None:
+                return faker.date()
+            
+            elif isinstance(date, datetime):
+                return data['birth_date']
+            
+            elif isinstance(date, str):
+                try:
+                    birth_date = datetime.strptime(date, '%Y-%m-%d').date()
+                    return birth_date
+                except ValueError:
+                    # print(f"Formato de fecha incorrecto: {date}")
+                    return faker.date()
+            else:
+                # print(f"Tipo de dato inesperado para birth_date: {type(date)}")
+                return faker.date()
+        except Exception as e:
+            print(f"Error processing birth_date: {e}")
+            return faker.date()
 
 def fetch_author_places(author_key):
     url = f'https://openlibrary.org/authors/{author_key}.json'
@@ -87,11 +106,28 @@ def fetch_book_description(book_key):
 def fetch_book_date_of_publication(book_key):
     url = f'https://openlibrary.org/works/{book_key}.json'
     response = requests.get(url)
+
     if response.status_code == 200:
         data = response.json()
+
         try:
-            return data['first_publish_date']
-        except:
+            date = data.get('first_publish_date')
+
+            if date is None:
+                return faker.date()
+            
+            elif isinstance(date, datetime):
+                return data['first_publish_date']
+            
+            elif isinstance(date, str):
+                return faker.date()
+                
+            else:
+                print(f"Tipo de dato inesperado para first_publish_date: {type(date)}")
+                return faker.date()
+            
+        except Exception as e:
+            print(f"Error processing first_publish_date: {e}")
             return faker.date()
 
 def fetch_book_title(book_key):
@@ -109,8 +145,9 @@ def fetch_book_title(book_key):
 
 def insert_data():
     # Obtener 50 autores
+    print('Insertando autores...')
     authors = []
-    for i in range(1, 51):
+    for i in range(1, 52):
         author_key = f'OL{i}A'
         author_name = fetch_author(author_key)
         if author_name:
@@ -125,7 +162,7 @@ def insert_data():
                 """,
                 (author_id, author_name, author_birth, author_country, author_description)
             )
-
+    print('Autores insertados correctamente')
     # Obtener 300 libros y agregar reseñas y ventas
     total_books = 0
     for author_key, author_name, author_id in authors:
