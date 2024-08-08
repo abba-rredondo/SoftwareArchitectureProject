@@ -8,7 +8,7 @@ from faker import Faker
 
 # Conectar a la base de datos Cassandra
 print('Conectando a la base de datos Cassandra...')
-cluster = Cluster(['cassandra'])
+cluster = Cluster(['127.0.0.1'])
 session = cluster.connect('tu_keyspace')
 faker = Faker()
 print('Conexión exitosa')
