@@ -1,20 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Sales Management{% endblock %}</title>
-</head>
-<body>
-    <header>
-        <h1>{% block header %}Sales Management{% endblock %}</h1>
-        <hr>
-    </header>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-    <footer>
-        <hr>
-        <p>&copy; Webook</p>
-    </footer>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Sales Management System{% endblock %}
+
+{% block content %}
+    <body>
+        <header>
+            <h1>{% block header %}Sales Management System{% endblock %}</h1>
+            <hr>
+        </header>
+        <main>
+            {% block sales_content %}{% endblock %}
+        </main>
+        <footer>
+            <hr>
+            <p>&copy; Webook</p>
+        </footer>
+    </body>
+{% endblock %}
+

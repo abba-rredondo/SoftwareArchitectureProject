@@ -3,11 +3,18 @@ from ..models import Review, Book
 from ..forms import ReviewForm
 from django.contrib import messages
 from uuid import uuid4
+from django.core.paginator import Paginator
 
 def review_list(request):
     reviews = Review.objects.all()
+
+    paginator = Paginator(reviews, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     books = Book.objects.all()
-    return render(request, 'review_templates/review_list.html', {'reviews': reviews, 'books':  books})
+
+    return render(request, 'review_templates/review_list.html', {'page_obj': page_obj, 'books': books})
 
 def review_create(request):
     if request.method == 'POST':
@@ -50,3 +57,4 @@ def review_delete(request, pk):
         review.delete()
         return redirect('review_list')
     return render(request, 'review_templates/review_confirm_delete.html', {'review': review})
+

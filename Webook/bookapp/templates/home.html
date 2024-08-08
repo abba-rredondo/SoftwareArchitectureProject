@@ -1,4 +1,107 @@
-{% extends 'base.html' %} {% block title} Home Page {%endblock}
+{% extends 'base.html' %}
+
+{% block title %}Home Page{% endblock %}
+
 {% block content %}
-<p>Joaquin Galindo Ocupó ChatGPT</p>
-{%endblock%}
+<div class="container mt-4">
+    <h1>Welcome to Webook</h1>
+    <p>Webook is a platform for book lovers to share their thoughts and opinions on books they have read.</p>
+    <p>You can search for authors, books, read reviews, and write your own reviews.</p>
+    
+    <div class="row mt-4">
+        <!-- Books Card -->
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    Books
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Explore our collection of books.</p>
+                    <a href="{% url 'book_list' %}" class="btn btn-primary">View Books</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Authors Card -->
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    Authors
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Discover authors and their works.</p>
+                    <a href="{% url 'author_list' %}" class="btn btn-success">View Authors</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reviews Card -->
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    Reviews
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Read and write reviews on books.</p>
+                    <a href="{% url 'review_list' %}" class="btn btn-warning">View Reviews</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Card -->
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    Sales
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Check out the sales statistics.</p>
+                    <a href="{% url 'sales_list' %}" class="btn btn-danger">View Sales</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Cards for Statistics -->
+    <div class="row mt-4">
+        <!-- Author Statistics Card -->
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    Author Statistics
+                </div>
+                <div class="card-body">
+                    <p class="card-text">View statistics on authors.</p>
+                    <a href="{% url 'author_statistics' %}" class="btn btn-info">View Author Stats</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Selling Books Card -->
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    Top Selling Books
+                </div>
+                <div class="card-body">
+                    <p class="card-text">See the top 50 selling books.</p>
+                    <a href="{% url 'top_selling_books' %}" class="btn btn-secondary">View Top Selling</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Rated Books Card -->
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    Top Rated Books
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Check out the top 10 rated books.</p>
+                    <a href="{% url 'top_rated_books' %}" class="btn btn-dark">View Top Rated</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

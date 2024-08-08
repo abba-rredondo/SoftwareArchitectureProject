@@ -1,20 +1,19 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Book Management</title>
-</head>
-<body>
-    <header>
-        <h1>Book Management System</h1>
-        <hr>
-    </header>
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
-    <footer>
-        <hr>
-        <p>&copy; Webook</p>
-    </footer>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Book Management System{% endblock %}
+
+{% block content %}
+<header>
+    <h1>Book Management System</h1>
+    <hr>
+</header>
+<main>
+    {% block book_content %}
+    {% endblock %}
+</main>
+<footer>
+    <hr>
+    <p>&copy; Webook</p>
+</footer>
+{% endblock %}
+

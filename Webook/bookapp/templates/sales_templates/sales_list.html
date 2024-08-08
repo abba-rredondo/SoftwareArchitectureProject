@@ -2,35 +2,78 @@
 
 {% block title %}Sales List{% endblock %}
 
-{% block content %}
+{% block sales_content %}
     <h2>Sales List</h2>
-    <table>
+    <div class="col-auto">
+        <a href="{% url 'sales_create' %}" class="btn btn-primary">Add Sales</a>
+    </div>
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Book</th>
-                <th>Year</th>
-                <th>Sales</th>
+                <th>2017</th>
+                <th>2018</th>
+                <th>2019</th>
+                <th>2020</th>
+                <th>2021</th>
+                <th>2022</th>
+                <th>2023</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
-            {% for sale in sales %}
-            <tr>
-                <td>
-                    {% for book in books %}
-                        {% if book.id == sale.book %}
-                            {{ book.name }}
-                        {% endif %}
-                    {% endfor %}
-                </td>
-                <td>{{ sale.year }}</td>
-                <td>{{ sale.sales }}</td>
-                <td>
-                    <a href="{% url 'sales_update' sale.book sale.year %}">Edit</a> |
-                    <a href="{% url 'sales_delete' sale.book sale.year %}">Delete</a>
-                </td>
-            </tr>
+            {% for book_id, book_data in sales_by_book.items %}
+                <tr>
+                    <td>{{ book_data.name }}</td>
+                    <td>{{ book_data.sales.2017 }}</td>
+                    <td>{{ book_data.sales.2018 }}</td>
+                    <td>{{ book_data.sales.2019 }}</td>
+                    <td>{{ book_data.sales.2020 }}</td>
+                    <td>{{ book_data.sales.2021 }}</td>
+                    <td>{{ book_data.sales.2022 }}</td>
+                    <td>{{ book_data.sales.2023 }}</td>
+                    <td>
+                        <a href="{% url 'sales_update' book_id '2017' %}" class="btn btn-warning btn-sm">Edit</a> |
+                        <a href="{% url 'sales_delete' book_id '2017' %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <div class="pagination">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 {% endblock %}

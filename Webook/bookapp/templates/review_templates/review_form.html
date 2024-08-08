@@ -2,11 +2,12 @@
 
 {% block title %}Review Form{% endblock %}
 
-{% block content %}
+{% block review_content %}
     <h2>Review Form</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Save</button>
+        <a href="{% url 'review_list' %}">Cancelar</a>
     </form>
 {% endblock %}

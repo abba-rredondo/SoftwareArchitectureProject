@@ -1,16 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% block title %}Review Management{% endblock %}</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Review Management System{% endblock %}
+
+{% block content %}
+
     <header>
-        <h1>{% block header %}Review Management{% endblock %}</h1>
+        <h1>{% block header %}Review Management System{% endblock %}</h1>
         <hr>
     </header>
 
     <main>
-        {% block content %}
+        {% block review_content %}
         
         {% endblock %}
     </main>
@@ -19,5 +19,7 @@
         <hr>
         <p>&copy; Webook</p>
     </footer>
-</body>
-</html>
+    </body>
+
+{% endblock %}
+

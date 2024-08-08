@@ -1,0 +1,48 @@
+{% extends 'book_templates/base_book.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block book_content %}
+  <h2>Search Results for "{{ query }}"</h2>
+  {% if page_obj %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Book Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for book in page_obj %}
+          <tr>
+            <td>{{ book.name }}</td>
+            <td>
+              <a href="{% url 'book_update' book.id %}" class="btn btn-warning btn-sm">Edit</a>
+              <a href="{% url 'book_delete' book.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <span class="step-links">
+        {% if page_obj.has_previous %}
+          <a href="?q={{ query }}&page=1">&laquo; First</a>
+          <a href="?q={{ query }}&page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="current">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+          <a href="?q={{ query }}&page={{ page_obj.next_page_number }}">Next</a>
+          <a href="?q={{ query }}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+      </span>
+    </div>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endblock %}

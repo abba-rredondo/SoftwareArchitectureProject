@@ -8,10 +8,16 @@ from cassandra.cluster import Cluster
 from django.db.models import Avg
 from cassandra.cqlengine import columns
 from datetime import datetime
+from django.core.paginator import Paginator
 
 def book_list(request):
-    books = Book.objects.all()
-    return render(request, 'book_templates/book_list.html', {'books': books})
+    book_list = Book.objects.all()
+    paginator = Paginator(book_list, 10)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    authors = Author.objects.all()
+    return render(request, 'book_templates/book_list.html', {'page_obj': page_obj, 'authors': authors})
 
 
 def book_create(request):
@@ -112,6 +118,22 @@ def get_total_sales(book_id):
     total_sales = sum(sale.sales for sale in sales_records)
     return total_sales
 
+def get_total_sales_author(author_id):
+    # Obtener todos los libros del autor y asegurarse de que sea una lista
+    books = list(Book.objects.filter(author=author_id).values_list('id', flat=True))
+
+    # Verificar si la lista de libros está vacía
+    if not books:
+        return 0
+
+    # Filtrar las ventas por esos libros y calcular el total
+    sales_records = Sales.objects.filter(book__in=books)
+    total_sales = sum(sale.sales for sale in sales_records)
+    return total_sales
+
+
+
+
 def get_average_score(book_id):
     reviews = Review.objects.filter(book=book_id)
     if reviews.count() == 0:
@@ -121,13 +143,12 @@ def get_average_score(book_id):
     return average_score
 
 def top_selling_books(request):
-    # Obtener los 50 libros más vendidos
     top_books = Book.objects.all().order_by('-number_of_sales')[:50]
     
     data = []
     for book in top_books:
         total_sales = get_total_sales(book.id)
-        author_sales = get_total_sales(book.author)  # Asegúrate de que el ID del autor sea correcto
+        author_sales = get_total_sales_author(book.author) 
         average_score = get_average_score(book.id)
         
         # Verificar si el libro fue uno de los 5 más vendidos en el año de su publicación
@@ -139,6 +160,7 @@ def top_selling_books(request):
             publication_year = None
         
         top_books_year = Sales.objects.filter(year=publication_year).order_by('-sales')[:5]
+        print(top_books_year)
         was_top_5 = any(sale.book == book.id for sale in top_books_year)
         
         data.append({

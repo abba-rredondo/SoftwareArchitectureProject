@@ -2,11 +2,12 @@
 
 {% block title %}Create Sale{% endblock %}
 
-{% block content %}
+{% block sales_content %}
     <h2>Create Sale</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Save</button>
+        <a href="{% url 'sales_list' %}">Cancelar</a>
     </form>
 {% endblock %}

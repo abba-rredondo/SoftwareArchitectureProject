@@ -4,11 +4,16 @@ from django.db.models import Avg, Sum
 from ..forms import AuthorForm
 from uuid import uuid4
 from django.contrib import messages
+from django.core.paginator import Paginator
 
 
 def author_list(request):
-    authors = Author.objects.all()
-    return render(request, 'author_templates/author_list.html', {'authors': authors})
+    author_list = Author.objects.all()
+    paginator = Paginator(author_list, 10)  
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'author_templates/author_list.html', {'page_obj': page_obj})
+
 
 
 def author_create(request):

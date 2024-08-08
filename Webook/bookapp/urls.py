@@ -22,5 +22,6 @@ urlpatterns = [
     path('sales/create/', sales_views.sales_create, name='sales_create'),
     path('sales/<uuid:book_id>/<int:year>/update/', sales_views.sales_update, name='sales_update'),
     path('sales/<uuid:book_id>/<int:year>/delete/', sales_views.sales_delete, name='sales_delete'),
+    path('books/search/', views.book_search, name='book_search'),
 
 ]

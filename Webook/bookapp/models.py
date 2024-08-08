@@ -15,11 +15,11 @@ class Book(DjangoCassandraModel):
     summary = columns.Text()
     date_of_publication = columns.Date()
     number_of_sales = columns.BigInt(default=0)
-    author = columns.UUID()  # Referencia al ID del autor
+    author = columns.UUID() 
 
 class Review(DjangoCassandraModel):
     id = columns.UUID(primary_key=True)
-    book = columns.UUID()  # Referencia al ID del libro
+    book = columns.UUID()  
     review_text = columns.Text()
     score = columns.Integer()
     up_votes = columns.Integer(default=0)
@@ -33,4 +33,4 @@ class Sales(DjangoCassandraModel):
     sales = columns.BigInt(default=0)
 
     class Meta:
-        get_pk_field = 'book' #book es la clave primaria de la tabla
+        get_pk_field = 'book' 

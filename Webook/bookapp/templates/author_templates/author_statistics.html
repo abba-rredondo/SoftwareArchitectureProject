@@ -1,4 +1,6 @@
+{% extends 'author_templates/base_author.html' %}
 
+{% block author_content %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,7 +22,23 @@
     <script>
         function sortTable(column) {
             const urlParams = new URLSearchParams(window.location.search);
+            const currentSort = urlParams.get('sort');
+            const currentDirection = urlParams.get('direction');
+
+            let newDirection = 'asc';
+            if (currentSort === column && currentDirection === 'asc') {
+                newDirection = 'desc';
+            }
+
             urlParams.set('sort', column);
+            urlParams.set('direction', newDirection);
+            window.location.search = urlParams.toString();
+        }
+
+
+        function filterByName(value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('filter_name', value);
             window.location.search = urlParams.toString();
         }
     </script>
@@ -51,13 +69,6 @@
             {% endfor %}
         </tbody>
     </table>
-    
-    <script>
-        function filterByName(value) {
-            const urlParams = new URLSearchParams(window.location.search);
-            urlParams.set('filter_name', value);
-            window.location.search = urlParams.toString();
-        }
-    </script>
 </body>
 </html>
+{% endblock %}

@@ -1,15 +1,24 @@
 from django import forms
 from .models import Author, Book, Review, Sales
 from cassandra.cqlengine.query import DoesNotExist
+from django.forms.widgets import DateInput
 
 class AuthorForm(forms.ModelForm):
+    date_of_birth = forms.DateField(
+        widget=DateInput(attrs={'type': 'date'}),
+        required=False
+    )
+
     class Meta:
         model = Author
         fields = ['name', 'date_of_birth', 'country_of_origin', 'description']
 
-
 class BookForm(forms.ModelForm):
     author = forms.ChoiceField(choices=[])
+    date_of_publication = forms.DateField(
+        widget=DateInput(attrs={'type': 'date'}),
+        required=False
+    )
 
     class Meta:
         model = Book
@@ -40,7 +49,6 @@ class ReviewForm(forms.ModelForm):
         except DoesNotExist:
             book_choices = []
         self.fields['book'].choices = book_choices
-
 
 class SalesForm(forms.ModelForm):
     book = forms.ChoiceField(choices=[])
