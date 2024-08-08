@@ -139,7 +139,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-
+CASSANDRA_FALLBACK_ORDER_BY_PYTHON = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 

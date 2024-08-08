@@ -6,7 +6,8 @@ from django.contrib import messages
 from uuid import uuid4
 from cassandra.cluster import Cluster
 from django.db.models import Avg
-
+from cassandra.cqlengine import columns
+from datetime import datetime
 
 def book_list(request):
     books = Book.objects.all()
@@ -105,3 +106,47 @@ def top_rated_books(request):
         })
 
     return render(request, 'book_templates/top_rated_books.html', {'books': result})
+
+def get_total_sales(book_id):
+    sales_records = Sales.objects.filter(book=book_id)
+    total_sales = sum(sale.sales for sale in sales_records)
+    return total_sales
+
+def get_average_score(book_id):
+    reviews = Review.objects.filter(book=book_id)
+    if reviews.count() == 0:
+        return 0
+    total_score = sum(review.score for review in reviews)
+    average_score = total_score / reviews.count()
+    return average_score
+
+def top_selling_books(request):
+    # Obtener los 50 libros más vendidos
+    top_books = Book.objects.all().order_by('-number_of_sales')[:50]
+    
+    data = []
+    for book in top_books:
+        total_sales = get_total_sales(book.id)
+        author_sales = get_total_sales(book.author)  # Asegúrate de que el ID del autor sea correcto
+        average_score = get_average_score(book.id)
+        
+        # Verificar si el libro fue uno de los 5 más vendidos en el año de su publicación
+        publication_year = book.date_of_publication
+        if publication_year:
+            # Convertir a un objeto datetime y extraer el año
+            publication_year = datetime.strptime(str(publication_year), '%Y-%m-%d').year
+        else:
+            publication_year = None
+        
+        top_books_year = Sales.objects.filter(year=publication_year).order_by('-sales')[:5]
+        was_top_5 = any(sale.book == book.id for sale in top_books_year)
+        
+        data.append({
+            'book': book.name,
+            'total_sales': total_sales,
+            'author_sales': author_sales,
+            'average_score': average_score,
+            'was_top_5': was_top_5
+        })
+    
+    return render(request, 'book_templates/top_selling_books.html', {'data': data})

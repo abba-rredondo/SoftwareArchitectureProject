@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Selling Books</title>
+</head>
+<body>
+    <h1>Top 50 Selling Books</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Total Sales</th>
+                <th>Author Sales</th>
+                <th>Average Score</th>
+                <th>Was Top 5 in Publication Year</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+                <tr>
+                    <td>{{ item.book }}</td>
+                    <td>{{ item.total_sales }}</td>
+                    <td>{{ item.author_sales }}</td>
+                    <td>{{ item.average_score }}</td>
+                    <td>{{ item.was_top_5|yesno:"Yes,No" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

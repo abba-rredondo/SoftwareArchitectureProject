@@ -48,3 +48,4 @@ def sales_delete(request, book_id, year):
         sales.delete()
         return redirect('sales_list')
     return render(request, 'sales_templates/sales_confirm_delete.html', {'sales': sales})
+
