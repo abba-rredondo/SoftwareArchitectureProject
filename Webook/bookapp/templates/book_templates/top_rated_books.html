@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Rated Books</title>
+</head>
+<body>
+    <h1>Top 10 Rated Books of All Time</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Book Name</th>
+                <th>Average Score</th>
+                <th>Highest Rated Review</th>
+                <th>Lowest Rated Review</th>
+                <th>Most Popular Review</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in books %}
+            <tr>
+                <td>{{ entry.book.name }}</td>
+                <td>{{ entry.average_score }}</td>
+                <td>
+                    {% if entry.highest_review %}
+                        {{ entry.highest_review.review_text }} (Score: {{ entry.highest_review.score }})
+                    {% else %}
+                        No reviews
+                    {% endif %}
+                </td>
+                <td>
+                    {% if entry.lowest_review %}
+                        {{ entry.lowest_review.review_text }} (Score: {{ entry.lowest_review.score }})
+                    {% else %}
+                        No reviews
+                    {% endif %}
+                </td>
+                <td>
+                    {% if entry.most_popular_review %}
+                        {{ entry.most_popular_review.review_text }} (Up Votes: {{ entry.most_popular_review.up_votes }})
+                    {% else %}
+                        No reviews
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
