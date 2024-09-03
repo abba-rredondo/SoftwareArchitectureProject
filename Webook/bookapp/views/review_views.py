@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect # type: ignore
 from ..models import Review, Book
 from ..forms import ReviewForm
-from django.contrib import messages
+from django.contrib import messages # type: ignore
 from uuid import uuid4
-from django.core.paginator import Paginator
-
+from django.core.paginator import Paginator # type: ignore
+from django.core.cache import cache # type: ignore
+from django.db import models # type: ignore
+from ..cache import is_cache_active
 def review_list(request):
     reviews = Review.objects.all()
 

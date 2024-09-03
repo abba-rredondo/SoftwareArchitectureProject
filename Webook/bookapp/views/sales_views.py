@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect # type: ignore
 from ..models import Sales, Book
 from ..forms import SalesForm
-from django.contrib import messages
-from django.core.paginator import Paginator
+from django.contrib import messages # type: ignore
+from django.core.paginator import Paginator # type: ignore
+from ..cache import is_cache_active
+from django.core.cache import cache # type: ignore
 
 def sales_list(request):
     sales = Sales.objects.all().order_by('book', 'year')
