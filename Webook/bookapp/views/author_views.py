@@ -1,17 +1,31 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404 # type: ignore
 from ..models import Author, Book, Review, Sales
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Sum # type: ignore
 from ..forms import AuthorForm
 from uuid import uuid4
-from django.contrib import messages
-from django.core.paginator import Paginator
-
+from django.contrib import messages # type: ignore
+from django.core.paginator import Paginator # type: ignore
+from django.core.cache import cache # type: ignore
+from ..cache import is_cache_active
 
 def author_list(request):
-    author_list = Author.objects.all()
-    paginator = Paginator(author_list, 10)  
+    cache_key_authors = 'author_list'
+
+    authors = None
+
+    if is_cache_active():
+        authors = cache.get(cache_key_authors)
+
+    if authors is None:
+        authors_queryset = Author.objects.all()
+        authors = [{'id': str(author.id), 'name': author.name} for author in authors_queryset]  
+        if is_cache_active():
+            cache.set(cache_key_authors, authors, timeout=600)
+
+    paginator = Paginator(authors, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'author_templates/author_list.html', {'page_obj': page_obj})
 
 
@@ -60,18 +74,34 @@ def author_delete(request, pk):
     return render(request, 'author_templates/author_confirm_delete.html', {'author': author})
 
 
+def author_statistics(request): 
+    cache_key = 'author_statistics'
+    
+    if is_cache_active():
+        data = cache.get(cache_key)
+        if data is not None:
+            sort = request.GET.get('sort', 'name')
+            filter_name = request.GET.get('filter_name', '')
 
+            if filter_name:
+                data = [d for d in data if filter_name.lower() in d['name'].lower()]
 
-def author_statistics(request):
+            if sort:
+                data = sorted(data, key=lambda x: x[sort])
+
+            return render(request, 'author_templates/author_statistics.html', {'data': data, 'sort': sort, 'filter_name': filter_name})
+
     authors = Author.objects.all()
-
-    # Recopilando datos de los autores
     data = []
+
     for author in authors:
         books = Book.objects.filter(author=author.id)
         all_reviews = []
         total_sales = 0
     
+    
+        # Iterar sobre cada libro y recolectar reseñas
+
         # Iterar sobre cada libro y recolectar reseñas
         for book in books:
             reviews = Review.objects.filter(book=book.id)
@@ -79,13 +109,15 @@ def author_statistics(request):
 
         for book in books:
             sales_records = Sales.objects.filter(book=book.id)
-            total_sales = sum(sales_record.sales for sales_record in sales_records)
-             
+            total_sales += sum(sales_record.sales for sales_record in sales_records)
 
         num_books = books.count()
         scores = [review.score for review in all_reviews]
         average_score = sum(scores) / len(scores) if scores else 0
         
+        
+        
+
         
         data.append({
             'name': author.name,
@@ -93,14 +125,16 @@ def author_statistics(request):
             'promedio_puntuacion': average_score,
             'ventas_totales': total_sales
         })
-    
-    # Ordenación y filtrado
+
+    if is_cache_active():
+        cache.set(cache_key, data, timeout=600)
+
     sort = request.GET.get('sort', 'name')
     filter_name = request.GET.get('filter_name', '')
-    
+
     if filter_name:
         data = [d for d in data if filter_name.lower() in d['name'].lower()]
-    
+
     if sort:
         data = sorted(data, key=lambda x: x[sort])
 
