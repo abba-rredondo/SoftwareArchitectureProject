@@ -9,11 +9,25 @@ from django.core.cache import cache # type: ignore
 from ..cache import is_cache_active
 
 def author_list(request):
-    author_list = Author.objects.all()
-    paginator = Paginator(author_list, 10)  
+    cache_key_authors = 'author_list'
+
+    authors = None
+
+    if is_cache_active():
+        authors = cache.get(cache_key_authors)
+
+    if authors is None:
+        authors_queryset = Author.objects.all()
+        authors = [{'id': str(author.id), 'name': author.name} for author in authors_queryset]  
+        if is_cache_active():
+            cache.set(cache_key_authors, authors, timeout=600)
+
+    paginator = Paginator(authors, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
     return render(request, 'author_templates/author_list.html', {'page_obj': page_obj})
+
 
 
 def author_create(request):

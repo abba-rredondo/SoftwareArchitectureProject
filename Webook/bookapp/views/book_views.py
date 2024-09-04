@@ -13,12 +13,32 @@ from django.core.cache import cache # type: ignore
 from ..cache import is_cache_active
 
 def book_list(request):
-    book_list = Book.objects.all()
-    paginator = Paginator(book_list, 10)  
+    cache_key_books = 'book_list'
+    cache_key_authors = 'author_list_for_books'
+
+    books = None
+    authors = None
+
+    if is_cache_active():
+        books = cache.get(cache_key_books)
+        authors = cache.get(cache_key_authors)
+
+    if books is None:
+        books_queryset = Book.objects.all()
+        books = [{'id': str(book.id), 'name': book.name, 'author_id': str(book.author)} for book in books_queryset] 
+        if is_cache_active():
+            cache.set(cache_key_books, books, timeout=600)
+
+    if authors is None:
+        authors_queryset = Author.objects.all()
+        authors = [{'id': str(author.id), 'name': author.name} for author in authors_queryset]  
+        if is_cache_active():
+            cache.set(cache_key_authors, authors, timeout=600)
+
+    paginator = Paginator(books, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    authors = Author.objects.all()
     return render(request, 'book_templates/book_list.html', {'page_obj': page_obj, 'authors': authors})
 
 
@@ -68,45 +88,46 @@ def book_delete(request, pk):
 
 def top_rated_books(request):
     cache_key = 'top_rated_books'
-    
+
+    result = None
+
     if is_cache_active():
         result = cache.get(cache_key)
-        if result is not None:
-            print("Data retrieved from cache")
-            return render(request, 'book_templates/top_rated_books.html', {'books': result})
 
-    books = Book.objects.all()
-    book_scores = []
+    if result is None:
+        books_queryset = Book.objects.all()
+        books = [{'id': str(book.id), 'name': book.name} for book in books_queryset]
 
-    for book in books:
-        print(f"Processing book: {book.name}")
-        reviews = Review.objects.filter(book=book.id)
-        total_score = sum(review.score for review in reviews)
-        review_count = reviews.count()
-        average_score = total_score / review_count if review_count > 0 else 0
+        book_scores = []
+        for book in books:
+            reviews_queryset = Review.objects.filter(book=book['id'])
+            total_score = sum(review.score for review in reviews_queryset)
+            review_count = reviews_queryset.count()
+            average_score = total_score / review_count if review_count > 0 else 0
 
-        highest_review = max(reviews, key=lambda r: r.score, default=None)
-        lowest_review = min(reviews, key=lambda r: r.score, default=None)
-        most_popular_review = max(reviews, key=lambda r: r.up_votes, default=None)
+            highest_review = max(reviews_queryset, key=lambda r: r.score, default=None)
+            lowest_review = min(reviews_queryset, key=lambda r: r.score, default=None)
+            most_popular_review = max(reviews_queryset, key=lambda r: r.up_votes, default=None)
 
-        book_scores.append({
-            'book': book,
-            'average_score': average_score,
-            'highest_review': highest_review,
-            'lowest_review': lowest_review,
-            'most_popular_review': most_popular_review,
-        })
+            book_scores.append({
+                'book': book,
+                'average_score': average_score,
+                'highest_review': {'score': highest_review.score, 'review_text': highest_review.review_text} if highest_review else None,
+                'lowest_review': {'score': lowest_review.score, 'review_text': lowest_review.review_text} if lowest_review else None,
+                'most_popular_review': {
+                    'score': most_popular_review.score if most_popular_review else None,
+                    'review_text': most_popular_review.review_text if most_popular_review else None,
+                    'up_votes': most_popular_review.up_votes if most_popular_review else None
+                } if most_popular_review else None
+            })
 
-        print(f"Book: {book.name}, Avg Score: {average_score}, Highest Review: {highest_review}, Lowest Review: {lowest_review}, Most Popular Review: {most_popular_review}")
+        result = sorted(book_scores, key=lambda x: x['average_score'], reverse=True)[:10]
 
-    # Ordenar por puntaje promedio
-    top_books = sorted(book_scores, key=lambda x: x['average_score'], reverse=True)[:10]
+        if is_cache_active():
+            cache.set(cache_key, result, timeout=600)
 
-    if is_cache_active():
-        cache.set(cache_key, top_books, timeout=600)
-    
-    print("Data processed and returned")
-    return render(request, 'book_templates/top_rated_books.html', {'books': top_books})
+    return render(request, 'book_templates/top_rated_books.html', {'books': result})
+
 
 
 

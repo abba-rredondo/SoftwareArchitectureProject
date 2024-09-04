@@ -7,14 +7,34 @@ from django.core.paginator import Paginator # type: ignore
 from django.core.cache import cache # type: ignore
 from django.db import models # type: ignore
 from ..cache import is_cache_active
+
+
 def review_list(request):
-    reviews = Review.objects.all()
+    cache_key_reviews = 'review_list'
+    cache_key_books = 'book_list_for_reviews'
+
+    reviews = None
+    books = None
+
+    if is_cache_active():
+        reviews = cache.get(cache_key_reviews)
+        books = cache.get(cache_key_books)
+
+    if reviews is None:
+        reviews_queryset = Review.objects.all()
+        reviews = [{'id': str(review.id), 'score': review.score, 'review_text': review.review_text, 'up_votes': review.up_votes, 'book_id': str(review.book)} for review in reviews_queryset]
+        if is_cache_active():
+            cache.set(cache_key_reviews, reviews, timeout=600)
+
+    if books is None:
+        books_queryset = Book.objects.all()
+        books = [{'id': str(book.id), 'name': book.name, 'author_id': str(book.author)} for book in books_queryset]
+        if is_cache_active():
+            cache.set(cache_key_books, books, timeout=600)
 
     paginator = Paginator(reviews, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    books = Book.objects.all()
 
     return render(request, 'review_templates/review_list.html', {'page_obj': page_obj, 'books': books})
 

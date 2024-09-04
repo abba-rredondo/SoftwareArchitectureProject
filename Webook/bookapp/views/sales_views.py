@@ -7,28 +7,48 @@ from ..cache import is_cache_active
 from django.core.cache import cache # type: ignore
 
 def sales_list(request):
-    sales = Sales.objects.all().order_by('book', 'year')
-    books = Book.objects.all()
+    cache_key_sales = 'sales_list'
+    cache_key_books = 'book_list_for_sales'
+
+    sales = None
+    books = None
+
+    if is_cache_active():
+        sales = cache.get(cache_key_sales)
+        books = cache.get(cache_key_books)
+
+    if sales is None:
+        sales_queryset = Sales.objects.all().order_by('book', 'year')
+        sales = [{'book': str(sale.book), 'year': sale.year, 'sales': sale.sales, 'id': str(sale.book)} for sale in sales_queryset]
+        if is_cache_active():
+            cache.set(cache_key_sales, sales, timeout=600)
+
+    if books is None:
+        books_queryset = Book.objects.all()
+        books = [{'id': str(book.id), 'name': book.name} for book in books_queryset]
+        if is_cache_active():
+            cache.set(cache_key_books, books, timeout=600)
 
     paginator = Paginator(sales, 70)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    book_dict = {book.id: book.name for book in books}
+    book_dict = {book['id']: book['name'] for book in books}
 
     sales_data = []
     for sale in page_obj:
         sales_data.append({
-            'book': book_dict.get(sale.book, 'Unknown Book'),
-            'year': sale.year,
-            'sales': sale.sales,
-            'id': sale.book
+            'book': book_dict.get(sale['book'], 'Unknown Book'),
+            'year': sale['year'],
+            'sales': sale['sales'],
+            'id': sale['book']
         })
 
     return render(request, 'sales_templates/sales_list.html', {
         'page_obj': page_obj,
         'sales_data': sales_data
     })
+
 
 def sales_create(request):
     if request.method == 'POST':

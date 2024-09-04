@@ -154,7 +154,7 @@ if os.getenv('CACHE_HOST'):
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': f'redis://{os.getenv("CACHE_HOST")}:{os.getenv("CACHE_PORT", 6379)}/1',
+            'LOCATION': 'redis://redis:6379/1',
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             }
