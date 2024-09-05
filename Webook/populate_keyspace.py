@@ -147,7 +147,7 @@ def insert_data():
     # Obtener 50 autores
     print('Insertando autores...')
     authors = []
-    for i in range(1, 52):
+    for i in range(1, 4): #RECORDAR CAMBIAR
         author_key = f'OL{i}A'
         author_name = fetch_author(author_key)
         if author_name:
@@ -169,7 +169,7 @@ def insert_data():
         books = fetch_books_by_author(author_key)
         for book in books:
             book_key = book['key'].split('/')[-1]
-            if total_books >= 300:
+            if total_books >= 10: #RECORDAR CAMBIAR
                 break
             book_id = uuid.uuid4()
             name = fetch_book_title(book_key)
@@ -185,7 +185,7 @@ def insert_data():
             total_books += 1
 
             # Agregar entre 1 y 10 reseñas por libro
-            num_reviews = random.randint(2, 10)
+            num_reviews = random.randint(2, 3) #RECORDAR CAMBIAR
             for _ in range(num_reviews):
                 review_id = uuid.uuid4()
                 review_text = faker.text()

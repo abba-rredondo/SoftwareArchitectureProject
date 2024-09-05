@@ -7,6 +7,9 @@ services:
     command: >
       sh -c "
           python manage.py sync_cassandra &&
+          python populate_keyspace.py &&
+          python manage.py opensearch index rebuild --force &&
+          python populate_opensearch.py &&
           python manage.py runserver 0.0.0.0:8000
       "
     volumes:
