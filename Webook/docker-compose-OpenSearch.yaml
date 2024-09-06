@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    container_name: django_app
+    command: >
+      sh -c "
+          python manage.py sync_cassandra &&
+          python manage.py opensearch index rebuild --force &&
+          python populate_opensearch.py &&
+          python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+      opensearch-node1:
+        condition: service_healthy
+    environment:
+      - DB_HOST=cassandra
+      - DB_NAME=tu_keyspace
+      - DB_PORT=9042
+      - DB_USER=admin  
+      - DB_PASSWORD=adminpassword  
+    networks:
+      - mynetwork
+
+
+  cassandra:
+    image: cassandra:3.11
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    networks:
+      - mynetwork
+    volumes:
+      - cassandra_data:/var/lib/cassandra 
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TestCluster
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_START_RPC=true
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+      - CASSANDRA_AUTHENTICATOR=PasswordAuthenticator
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: 
+      - /bin/bash
+      - -c
+      - |
+        /docker-entrypoint.sh cassandra -f &
+        sleep 30
+        cqlsh -e "CREATE KEYSPACE IF NOT EXISTS tu_keyspace WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+        wait
+
+  opensearch-node1:
+    image: opensearchproject/opensearch:latest
+    container_name: opensearch-node1
+    environment:
+      - cluster.name=opensearch-cluster
+      - node.name=opensearch-node1
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "curl", "-s", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  cassandra_data:
+  opensearch-data1:

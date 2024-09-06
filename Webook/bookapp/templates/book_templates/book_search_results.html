@@ -1,5 +1,7 @@
 {% extends 'book_templates/base_book.html' %}
 
+{% load custom_filters %}
+
 {% block title %}Search Results{% endblock %}
 
 {% block book_content %}
@@ -9,6 +11,8 @@
       <thead>
         <tr>
           <th>Book Name</th>
+          <th>Summary</th>
+          <th>Author</th>  
           <th>Actions</th>
         </tr>
       </thead>
@@ -16,6 +20,14 @@
         {% for book in page_obj %}
           <tr>
             <td>{{ book.name }}</td>
+            <td>{{ book.summary }}</td>
+            <td>
+              {%if using_django_opensearch_dsl%}
+                {{ book.author}}
+              {% else %}
+                {{ authors_dict|get_item:book.author }}
+              {% endif %}
+            </td>
             <td>
               <a href="{% url 'book_update' book.id %}" class="btn btn-warning btn-sm">Edit</a>
               <a href="{% url 'book_delete' book.id %}" class="btn btn-danger btn-sm">Delete</a>

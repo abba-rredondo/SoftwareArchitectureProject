@@ -8,7 +8,7 @@ from faker import Faker
 
 # Conectar a la base de datos Cassandra
 print('Conectando a la base de datos Cassandra...')
-cluster = Cluster(['127.0.0.1'])
+cluster = Cluster(['cassandra'])
 session = cluster.connect('tu_keyspace')
 faker = Faker()
 print('Conexión exitosa')
@@ -147,7 +147,7 @@ def insert_data():
     # Obtener 50 autores
     print('Insertando autores...')
     authors = []
-    for i in range(1, 52):
+    for i in range(1, 52): 
         author_key = f'OL{i}A'
         author_name = fetch_author(author_key)
         if author_name:
@@ -169,7 +169,7 @@ def insert_data():
         books = fetch_books_by_author(author_key)
         for book in books:
             book_key = book['key'].split('/')[-1]
-            if total_books >= 300:
+            if total_books >= 300: 
                 break
             book_id = uuid.uuid4()
             name = fetch_book_title(book_key)

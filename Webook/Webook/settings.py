@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookapp',
-    'django_cassandra_engine'
+    'django_cassandra_engine',
+    'django_opensearch_dsl',
 
 ]
 
@@ -52,6 +53,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+OPENSEARCH_DSL = { #for OpenSearch
+    'default': {
+        'hosts': ['opensearch-node1:9200'],
+    }
+}
+
 
 ROOT_URLCONF = 'Webook.urls'
 
