@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  django:
+    build: .
+    container_name: django_app
+    command: >
+      sh -c "
+          python manage.py sync_cassandra &&
+          python manage.py runserver 0.0.0.0:8000
+      "
+    volumes:
+      - .:/app
+    expose:
+      - "8000"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      - DB_HOST=cassandra
+      - DB_NAME=tu_keyspace
+      - DB_PORT=9042
+      - DB_USER=admin  
+      - DB_PASSWORD=adminpassword  
+    networks:
+      - mynetwork
+
+
+  cassandra:
+    image: cassandra:3.11
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    networks:
+      - mynetwork
+    volumes:
+      - cassandra_data:/var/lib/cassandra 
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TestCluster
+      - CASSANDRA_NUM_TOKENS=256
+      - CASSANDRA_START_RPC=true
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=100M
+      - CASSANDRA_AUTHENTICATOR=PasswordAuthenticator
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    command: 
+      - /bin/bash
+      - -c
+      - |
+        /docker-entrypoint.sh cassandra -f &
+        sleep 30
+        cqlsh -e "CREATE KEYSPACE IF NOT EXISTS tu_keyspace WITH REPLICATION = {'class': 'SimpleStrategy', 'replication_factor': 1};"
+        wait
+
+  apache:
+    build:
+      context: ./apache-config
+      dockerfile: Dockerfile
+
+    container_name: apache_reverse_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./apache-config:/usr/local/apache2/conf/extra
+    depends_on:
+      - django
+    networks:
+      - mynetwork 
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  cassandra_data:
