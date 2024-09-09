@@ -25,7 +25,7 @@ def book_list(request):
 
     if books is None:
         books_queryset = Book.objects.all()
-        books = [{'id': str(book.id), 'name': book.name, 'author_id': str(book.author)} for book in books_queryset] 
+        books = [{'id': str(book.id), 'name': book.name, 'author': str(book.author), 'date_of_publication': book.date_of_publication, 'number_of_sales': book.number_of_sales} for book in books_queryset] 
         if is_cache_active():
             cache.set(cache_key_books, books, timeout=600)
 
@@ -44,15 +44,13 @@ def book_list(request):
 
 def book_create(request):
     if request.method == 'POST':
-        form = BookForm(request.POST)
+        form = BookForm(request.POST, request.FILES)
         if form.is_valid():
-            book_instance = form.save(commit=False)
-            if not book_instance.id:
-                book_instance.id = uuid4()  
-            book_instance.save()
+            form.save()  # El formulario maneja la lógica de guardado
             return redirect('book_list')
     else:
         form = BookForm()
+
     
     return render(request, 'book_templates/book_form.html', {'form': form})
 
@@ -63,14 +61,15 @@ def book_update(request, pk):
     except Book.DoesNotExist:
         messages.error(request, 'Book not found')
         redirect("/")
-
+    
     if request.method == 'POST':
-        form = BookForm(request.POST, instance=book)
+        form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
-            form.save()
+            form.save()  
             return redirect('book_list')
     else:
         form = BookForm(instance=book)
+
     return render(request, 'book_templates/book_form.html', {'form': form})
 
 

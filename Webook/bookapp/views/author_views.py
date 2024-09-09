@@ -18,7 +18,7 @@ def author_list(request):
 
     if authors is None:
         authors_queryset = Author.objects.all()
-        authors = [{'id': str(author.id), 'name': author.name} for author in authors_queryset]  
+        authors = [{'id': str(author.id), 'name': author.name, 'date_of_birth': author.date_of_birth, 'country_of_origin':author.country_of_origin, 'description':author.description} for author in authors_queryset]  
         if is_cache_active():
             cache.set(cache_key_authors, authors, timeout=600)
 
@@ -31,12 +31,9 @@ def author_list(request):
 
 def author_create(request):
     if request.method == 'POST':
-        print(f"la resolución al request.FILES es :{request.FILES}")
         form = AuthorForm(request.POST, request.FILES)  
         if form.is_valid():
-            author = form.save(commit=False)
-            author.id = uuid4()  
-            author.save()
+            form.save()  
             return redirect('author_list')
     else:
         form = AuthorForm()
@@ -45,20 +42,20 @@ def author_create(request):
 
 
 def author_update(request, pk):
-
     try:
         author = Author.objects.get(id=pk)
     except Author.DoesNotExist:
         messages.error(request, 'Author not found')
-        redirect("/")
+        return redirect("/")
 
     if request.method == 'POST':
-        form = AuthorForm(request.POST, instance=author)
+        form = AuthorForm(request.POST, request.FILES, instance=author) 
         if form.is_valid():
             form.save()
             return redirect('author_list')
     else:
         form = AuthorForm(instance=author)
+    
     return render(request, 'author_templates/author_form.html', {'form': form})
 
 

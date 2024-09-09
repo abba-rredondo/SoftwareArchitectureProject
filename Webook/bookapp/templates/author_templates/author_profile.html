@@ -12,6 +12,9 @@
     </head>
     <body>
         <div class="container mt-5">
+            <hr>
+            <a href="{% url 'author_list' %}" class="btn btn-primary mb-2">Go back to Authors</a>
+            <hr>
             <div class="card">
                 <div class="card-header text-center">
                     <h1>{{ author.name }}</h1>
