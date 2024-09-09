@@ -1,5 +1,7 @@
 from django.urls import path
 from .views import author_views, book_views, views, review_views, sales_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -23,5 +25,10 @@ urlpatterns = [
     path('sales/<uuid:book_id>/<int:year>/update/', sales_views.sales_update, name='sales_update'),
     path('sales/<uuid:book_id>/<int:year>/delete/', sales_views.sales_delete, name='sales_delete'),
     path('books/search/', views.book_search, name='book_search'),
+    path('author/<uuid:author_id>/', author_views.author_profile, name='author_profile'),
+    path('book/<uuid:book_id>/', book_views.book_profile, name='book_profile'),
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

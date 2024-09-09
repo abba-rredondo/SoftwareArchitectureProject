@@ -229,3 +229,15 @@ def top_selling_books(request):
         cache.set(cache_key, data, timeout=600)
     
     return render(request, 'book_templates/top_selling_books.html', {'data': data})
+
+def book_profile(request, book_id):
+    try:
+        book = Book.objects.get(id=book_id)
+    except Book.DoesNotExist:
+        messages.error(request, 'Book not found')
+        redirect("/")
+
+    context = {
+        'book': book
+    }
+    return render(request, 'book_templates/book_profile.html', context)

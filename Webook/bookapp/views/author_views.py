@@ -29,10 +29,10 @@ def author_list(request):
     return render(request, 'author_templates/author_list.html', {'page_obj': page_obj})
 
 
-
 def author_create(request):
     if request.method == 'POST':
-        form = AuthorForm(request.POST)
+        print(f"la resolución al request.FILES es :{request.FILES}")
+        form = AuthorForm(request.POST, request.FILES)  
         if form.is_valid():
             author = form.save(commit=False)
             author.id = uuid4()  
@@ -40,6 +40,7 @@ def author_create(request):
             return redirect('author_list')
     else:
         form = AuthorForm()
+    
     return render(request, 'author_templates/author_form.html', {'form': form})
 
 
@@ -139,3 +140,20 @@ def author_statistics(request):
         data = sorted(data, key=lambda x: x[sort])
 
     return render(request, 'author_templates/author_statistics.html', {'data': data, 'sort': sort, 'filter_name': filter_name})
+
+def author_profile(request, author_id):
+    try:
+        author = Author.objects.get(id=author_id)
+    except Author.DoesNotExist:
+        messages.error(request, 'Author not found')
+        redirect("/")
+    
+    print(f"Author ID: {author.id}")
+    print(f"Author Name: {author.name}")
+    print(f"Image Path: {author.image_path}")
+        
+    context = {
+        'author': author
+    }
+    return render(request, 'author_templates/author_profile.html', context)
+
