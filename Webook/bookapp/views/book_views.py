@@ -47,7 +47,7 @@ def book_create(request):
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()  # El formulario maneja la lógica de guardado
-            return redirect('book_list')
+            return redirect('book_profile', book_id=form.instance.id)
     else:
         form = BookForm()
 
@@ -66,7 +66,7 @@ def book_update(request, pk):
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
             form.save()  
-            return redirect('book_list')
+            return redirect('book_profile', book_id=book.id)
     else:
         form = BookForm(instance=book)
 
@@ -236,7 +236,10 @@ def book_profile(request, book_id):
         messages.error(request, 'Book not found')
         redirect("/")
 
+    authors= Author.objects.all()
+    
     context = {
-        'book': book
+        'book': book,
+        'authors': authors
     }
     return render(request, 'book_templates/book_profile.html', context)

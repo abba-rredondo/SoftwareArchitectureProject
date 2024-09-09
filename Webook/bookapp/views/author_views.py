@@ -34,7 +34,7 @@ def author_create(request):
         form = AuthorForm(request.POST, request.FILES)  
         if form.is_valid():
             form.save()  
-            return redirect('author_list')
+            return redirect('author_profile', author_id=form.instance.id)
     else:
         form = AuthorForm()
     
@@ -52,7 +52,7 @@ def author_update(request, pk):
         form = AuthorForm(request.POST, request.FILES, instance=author) 
         if form.is_valid():
             form.save()
-            return redirect('author_list')
+            return redirect('author_profile', author_id=author.id)
     else:
         form = AuthorForm(instance=author)
     
