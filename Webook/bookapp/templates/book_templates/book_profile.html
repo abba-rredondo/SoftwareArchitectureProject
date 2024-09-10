@@ -1,0 +1,53 @@
+{% extends "book_templates/base_book.html" %}
+
+{% block book_content %}
+    
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Perfil del Libro</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container mt-5">
+            <hr>
+            <a href="{% url 'book_list' %}" class="btn btn-primary mb-2">Go back to Books</a>
+            <a href="{% url 'book_update' book.id %}" class="btn btn-warning mb-2">Edit Book</a>
+            <a href="{% url 'book_delete' book.id %}" class="btn btn-danger mb-2">Delete Book</a>
+            <hr>
+            <div class="card">
+                <div class="card-header text-center">
+                    <h1>{{ book.name }}</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if book.cover_image_path %}
+                                <img src="{{ MEDIA_URL }}{{ book.cover_image_path }}" class="img-fluid rounded mx-auto d-block" alt="{{ book.name }}">
+                            {% else %}
+                                <p class="text-center">No hay imagen disponible para este libro.</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <p><strong>Resumen:</strong> {{ book.summary }}</p>
+                            <p><strong>Fecha de publicación:</strong> {{ book.date_of_publication }}</p>
+                            <p><strong>Autor:</strong> 
+                                {% for author in authors %}
+                                    {% if author.id == book.author %}
+                                        {{ author.name }}
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p><strong>Número de ventas:</strong> {{ book.number_of_sales }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+
+{% endblock %}

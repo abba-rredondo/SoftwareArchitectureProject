@@ -8,6 +8,7 @@ class Author(DjangoCassandraModel):
     date_of_birth = columns.Date()
     country_of_origin = columns.Text()
     description = columns.Text()
+    image_path = columns.Text()
 
 class Book(DjangoCassandraModel):
     id = columns.UUID(primary_key=True)
@@ -15,7 +16,8 @@ class Book(DjangoCassandraModel):
     summary = columns.Text()
     date_of_publication = columns.Date()
     number_of_sales = columns.BigInt(default=0)
-    author = columns.UUID() 
+    author = columns.UUID()
+    cover_image_path = columns.Text() 
 
 class Review(DjangoCassandraModel):
     id = columns.UUID(primary_key=True)

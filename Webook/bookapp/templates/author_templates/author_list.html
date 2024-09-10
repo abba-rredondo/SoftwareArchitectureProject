@@ -17,10 +17,21 @@
     <tbody>
         {% for author in page_obj %}
         <tr>
-            <td>{{ author.name }}</td>
-            <td>{{ author.date_of_birth }}</td>
-            <td>{{ author.country_of_origin }}</td>
-            <td>{{ author.description }}</td>
+            <td>
+                <a href="{% url 'author_profile' author.id %}">
+                    {{ author.name }}
+                </a>
+            </td>
+            <td>
+                    {{ author.date_of_birth }}
+            </td>
+            <td>
+                    {{ author.country_of_origin }}
+            </td>
+            <td>
+                    {{ author.description }}
+            </td>
+            
             <td>
                 <a href="{% url 'author_update' author.id %}" class="btn btn-warning btn-sm">Edit</a>
                 <a href="{% url 'author_delete' author.id %}" class="btn btn-danger btn-sm">Delete</a>

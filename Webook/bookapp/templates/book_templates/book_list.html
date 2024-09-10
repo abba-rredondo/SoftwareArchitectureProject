@@ -16,7 +16,11 @@
         <tbody>
             {% for book in page_obj %}
             <tr>
-                <td>{{ book.name }}</td>
+                <td>
+                    <a href="{% url 'book_profile' book.id %}">
+                        {{ book.name }}
+                    </a>
+                </td>
                 <td>{{ book.date_of_publication }}</td>
                 <td>{{ book.number_of_sales }}</td>
                 <td>

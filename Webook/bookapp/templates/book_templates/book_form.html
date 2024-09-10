@@ -2,10 +2,11 @@
 
 {% block book_content %}
 <h2>{{ form.instance.id|yesno:"Update Book,Create Book" }}</h2>
-<form method="post">
+<form method="post" enctype="multipart/form-data">  
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save</button>
     <a href="{% url 'book_list' %}">Cancelar</a>
 </form>
 {% endblock %}
+
